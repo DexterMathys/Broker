@@ -1,5 +1,3 @@
-package serverSide;
-
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 

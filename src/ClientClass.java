@@ -1,10 +1,5 @@
-package clientSide;
-
 import java.rmi.Naming;
 import java.rmi.registry.Registry;
-
-import broker.Broker;
-import serverSide.IfaceServerClass;
 
 public class ClientClass {
 	
