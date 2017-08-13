@@ -1,8 +1,10 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.io.*;
 
 public class ServerClass extends UnicastRemoteObject implements IfaceServerClass {
 	
+	private static final long serialVersionUID = 1758625231493571910L;
 	private String operation = "NOTHING";
 	
 	public String getOperation() {
@@ -15,9 +17,49 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	}
 
 	@Override
-	public Number operation(int a, int b) throws RemoteException {
+	public String operation(String servicio, String params) throws RemoteException {
 		// TODO Auto-generated method stub
-		return null;
+		// return null;
+		switch (servicio) {
+    	case "list": return list(params);
+      case "create": return create(params);
+      case "rename": return rename(params);
+      case "delete": return delete(params);
+      default: return "Servicio invalido ";
+    }
+
+	}
+
+	// @Override
+	public String list(String path) throws RemoteException {
+		// TODO Auto-generated method stub
+		System.out.println("Listar los archivos");
+		String sDirectorio = path;
+		if (sDirectorio == null || sDirectorio.isEmpty() ){
+			sDirectorio = "./";	
+		}
+  	File f = new File(sDirectorio);
+ 		File[] ficheros = f.listFiles();
+ 		String result = "";
+ 		for (int x=0;x<ficheros.length;x++){
+    	  result += ficheros[x].getName() + "\n";
+    }
+    return result;
+	}
+
+	// @Override
+	public String create(String params) throws RemoteException {
+		return "";
+	}
+
+	// @Override
+	public String rename(String params) throws RemoteException {
+		return "";
+	}
+	
+	// @Override
+	public String delete(String params) throws RemoteException {
+		return "";
 	}
 
 }

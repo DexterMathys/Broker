@@ -31,4 +31,16 @@ public class Broker {
 		return this.servers.get(operation);
 	}
 
+	public static void main(String args[]) {
+		try {
+			ServerClass robject = new ServerClass();
+			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/remote";
+			Naming.rebind(rname, robject);
+		} catch (Exception e) {
+			System.out.println("Hey, an error occurred at Naming.rebind");
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+	}
+
 }
