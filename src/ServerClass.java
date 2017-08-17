@@ -1,6 +1,8 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class ServerClass extends UnicastRemoteObject implements IfaceServerClass {
 	
@@ -38,13 +40,13 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		if (sDirectorio == null || sDirectorio.isEmpty() ){
 			sDirectorio = "./";	
 		}
-  	File f = new File(sDirectorio);
+		File f = new File(sDirectorio);
  		File[] ficheros = f.listFiles();
  		String result = "";
  		for (int x=0;x<ficheros.length;x++){
     	  result += ficheros[x].getName() + "\n";
-    }
-    return result;
+	    }
+	    return result;
 	}
 
 	// @Override
@@ -58,8 +60,18 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	}
 	
 	// @Override
-	public String delete(String params) throws RemoteException {
-		return "";
+	public String delete(String path) throws RemoteException {
+		// TODO Auto-generated method stub
+		if (path == null || path.isEmpty() ){
+			System.out.println("El cliente envio un parametro vacio");
+			return "Error, falta el parametro a eliminar";
+		}
+		System.out.println("Eliminar " + path);
+		if (new File(path).delete()) {
+			return "Se elimino " + path;
+		} else {
+			return "Error al intentar eliminar " + path;
+		}
 	}
 
 }
