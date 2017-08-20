@@ -50,7 +50,22 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	}
 
 	// @Override
-	public String create(String params) throws RemoteException {
+	public String create(String path) throws RemoteException {
+		if (path == null || path.isEmpty() ){
+			System.out.println("El cliente envio un parametro vacio");
+			return "Error, falta el parametro a crear";
+		}
+		// Use relative path for Unix systems
+		File f = new File(path);
+
+		f.getParentFile().mkdirs(); 
+		try {
+			f.createNewFile();
+		} catch (IOException e) {
+			System.out.println("No se pudo crear el archivo");
+			return "No se pudo crear el archivo";
+			//e.printStackTrace();
+		}
 		return "";
 	}
 
