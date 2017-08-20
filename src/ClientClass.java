@@ -49,7 +49,7 @@ public class ClientClass {
 		IfaceServerClass broker;
 		Boolean seguir = true;
 		while (seguir){
-			System.out.print("Ingrese el servicio que desea utilizar(list, create, remove, delete): ");
+			System.out.print("Ingrese el servicio que desea utilizar(list, create, rename, delete): ");
 			String line = sc.nextLine();
 			String[] service = line.split(" ");
 			if (service.length == 0 || service[0].equals("exit")) {
@@ -59,7 +59,7 @@ public class ClientClass {
 					//Parametros
 					String params = "";
 					for(int i=1; i < service.length ; i++) {
-						params += service[i];
+						params += service[i] + " ";
 					}
 					// Llamado
 					broker = callRemote(args[0]);

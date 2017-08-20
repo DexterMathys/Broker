@@ -36,7 +36,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	public String list(String path) throws RemoteException {
 		// TODO Auto-generated method stub
 		System.out.println("Listar los archivos");
-		String sDirectorio = path;
+		String sDirectorio = path.replaceAll("\\s+","");
 		if (sDirectorio == null || sDirectorio.isEmpty() ){
 			sDirectorio = "./";	
 		}
@@ -56,22 +56,37 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			return "Error, falta el parametro a crear";
 		}
 		// Use relative path for Unix systems
-		File f = new File(path);
+		File f = new File(path.replaceAll("\\s+",""));
 
-		f.getParentFile().mkdirs(); 
-		try {
-			f.createNewFile();
-		} catch (IOException e) {
-			System.out.println("No se pudo crear el archivo");
-			return "No se pudo crear el archivo";
-			//e.printStackTrace();
-		}
-		return "";
+		f.mkdirs(); 
+		// try {
+		// 	//f.createNewFile();
+		// } catch (IOException e) {
+		// 	System.out.println("No se pudo crear el archivo");
+		// 	return "No se pudo crear el archivo";
+		// 	//e.printStackTrace();
+		// }
+		return "Se creo el directorio";
 	}
 
 	// @Override
 	public String rename(String params) throws RemoteException {
-		return "";
+		if (params == null || params.isEmpty() || params.split(" ").length != 2 ){
+			System.out.println("El cliente envio un parametro vacio");
+			return "Error, falta el parametro para renombrar";
+		}
+		String[] paths = params.split(" ");
+		File dir = new File(paths[0]);
+    File newName = new File(paths[1]);
+    if ( dir.isDirectory() ) {
+            dir.renameTo(newName);
+            return "Se renombro el directorio";
+    } else {
+            dir.mkdir();
+            dir.renameTo(newName);
+            return "El directiorio no existia por lo tanto se creo";
+    }
+
 	}
 	
 	// @Override
@@ -82,7 +97,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			return "Error, falta el parametro a eliminar";
 		}
 		System.out.println("Eliminar " + path);
-		if (new File(path).delete()) {
+		if (new File(path.replaceAll("\\s+","")).delete()) {
 			return "Se elimino " + path;
 		} else {
 			return "Error al intentar eliminar " + path;
