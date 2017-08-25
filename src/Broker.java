@@ -42,5 +42,19 @@ public class Broker {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	/*
+	 * El main del broker deberia de registrarse a si mismo 
+	  	String rname = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
+		Naming.rebind(rname, this);
+	 * Y tener su interfaz para que los clientes y los servidores le puedan hacer llamados remotas
+	 * 
+	 * El broker debe definir un método para guardar los "rname" de los servidores junto a los 
+	 * servicios que brindan.
+	 * 
+	 * Y también tiene que definir un método para buscar en su lista de servidores y devolver el
+	 * "rname" que sea solicitado por el cliente
+	 * 
+	 * */
 
 }

@@ -72,5 +72,14 @@ public class ClientClass {
 			}
 		}
 	}
+	
+	/*
+	 * El main del cliente cambia un poco, hasta ahora estaba accediendo directamente al "rname" del
+	 * servidor, no se lo estaba preguntando al broker.
+	 * Entonces ahora lo que debe hacer es saber el "rname" del broker y preguntarle de forma remota a
+	 * través de su interfaz y pedirle al broker el "rname" del servidor, y ahi si entonces ejecutar
+	 * al servidor.
+	 * 
+	 * */
 
 }

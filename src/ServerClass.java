@@ -103,5 +103,10 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			return "Error al intentar eliminar " + path;
 		}
 	}
+	
+	/**
+	 * El main del servidor tiene que conocer el "rname" del broker para que pueda decirle a este 
+	 * que servicio ofrece de forma remota.
+	 */
 
 }
