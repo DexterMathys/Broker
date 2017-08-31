@@ -1,23 +1,25 @@
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 
-public class Broker {
+public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 	
-	private HashMap<String,String> servers = null;
+	private HashMap<String,String> servers = new HashMap<String,String>();
 
-	public Broker() {
-		// TODO Auto-generated constructor stub
+	public Broker() throws RemoteException{
+		super();
 	}
 
-	public String registerServer(ServerClass server) {
+	public String registerServer(String rname, String operation) throws RemoteException {
 		// TODO Auto-generated method stub
 		try{
 			/* Register the object using Naming.rebind(...) */
-			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/remote";
-			Naming.rebind(rname, server);
-			this.servers.put(server.getOperation(), rname);
+			System.out.println("Me llego " + rname);
+			System.out.println(" y " + operation);
+			this.servers.put(operation, rname);
 			return rname;
 		} catch (Exception e) {
 			System.out.println("Hey, an error occurred at Naming.rebind");
@@ -27,15 +29,17 @@ public class Broker {
 		}
 	}
 	
-	public String returnServer(String operation){
+	public String returnServer(String operation) throws RemoteException{
 		return this.servers.get(operation);
 	}
 
 	public static void main(String args[]) {
 		try {
-			ServerClass robject = new ServerClass();
-			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/remote";
-			Naming.rebind(rname, robject);
+			String rnamebroker = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
+			Naming.rebind(rnamebroker, new Broker());
+			//ServerClass robject = new ServerClass();
+			//String rname = "//localhost:" + Registry.REGISTRY_PORT + "/remote";
+			//Naming.rebind(rname, robject);
 		} catch (Exception e) {
 			System.out.println("Hey, an error occurred at Naming.rebind");
 			e.printStackTrace();

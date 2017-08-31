@@ -11,11 +11,21 @@ public class ClientClass {
 		// TODO Auto-generated constructor stub
 	}
 
-	private static IfaceServerClass callRemote(String host)
+	private static IfaceServerClass getServer(String server)
 	{
 		try{ 
-			String rname = "//" + host + ":" + Registry.REGISTRY_PORT + "/remote";
-			return (IfaceServerClass) Naming.lookup(rname);
+			return (IfaceServerClass) Naming.lookup(server);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private static IfaceBrokerClass getBroker()
+	{
+		try{ 
+			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
+			return (IfaceBrokerClass) Naming.lookup(rname);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -38,15 +48,9 @@ public class ClientClass {
 
 	public static void main(String[] args)
 	{
-		// FileInputStream fstream = null;
-		
-		if (args.length != 1) {
-			System.out.println("1 argument needed: (remote) hostname");
-			System.exit(1);
-		}
 		
 		Scanner sc = new Scanner(System.in);
-		IfaceServerClass broker;
+		IfaceBrokerClass broker;
 		Boolean seguir = true;
 		while (seguir){
 			System.out.print("Ingrese el servicio que desea utilizar(list, create, rename, delete): ");
@@ -61,10 +65,11 @@ public class ClientClass {
 					for(int i=1; i < service.length ; i++) {
 						params += service[i] + " ";
 					}
-					// Llamado
-					broker = callRemote(args[0]);
-					String result = broker.operation(service[0],params);
-					System.out.println(result);
+					broker = getBroker();
+					String rnameserver = broker.returnServer(service[0]);
+					System.out.println(rnameserver);
+					IfaceServerClass server = getServer(rnameserver);
+					System.out.println(server.operation(service[0], params));
 					
 				} catch (Exception e) {
 					e.printStackTrace();

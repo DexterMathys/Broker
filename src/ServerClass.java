@@ -1,8 +1,9 @@
+import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class ServerClass extends UnicastRemoteObject implements IfaceServerClass {
 	
@@ -11,6 +12,10 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	
 	public String getOperation() {
 		return operation;
+	}
+	
+	private void setOperation(String operation) {
+		this.operation = operation;
 	}
 
 	public ServerClass() throws RemoteException {
@@ -77,15 +82,15 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		}
 		String[] paths = params.split(" ");
 		File dir = new File(paths[0]);
-    File newName = new File(paths[1]);
-    if ( dir.isDirectory() ) {
-            dir.renameTo(newName);
-            return "Se renombro el directorio";
-    } else {
-            dir.mkdir();
-            dir.renameTo(newName);
-            return "El directiorio no existia por lo tanto se creo";
-    }
+	    File newName = new File(paths[1]);
+	    if ( dir.isDirectory() ) {
+	            dir.renameTo(newName);
+	            return "Se renombro el directorio";
+	    } else {
+	            dir.mkdir();
+	            dir.renameTo(newName);
+	            return "El directiorio no existia por lo tanto se creo";
+	    }
 
 	}
 	
@@ -101,6 +106,47 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			return "Se elimino " + path;
 		} else {
 			return "Error al intentar eliminar " + path;
+		}
+	}
+	
+	private static IfaceBrokerClass getBroker()
+	{
+		try{ 
+			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
+			return (IfaceBrokerClass) Naming.lookup(rname);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static void main(String[] args)
+	{
+		// FileInputStream fstream = null;
+		
+		Scanner sc = new Scanner(System.in);
+		IfaceBrokerClass broker;
+		System.out.print("Ingrese el servicio que desea registrar (list, create, rename, delete): ");
+		String line = sc.nextLine();
+		String[] service = line.split(" ");
+		
+		try {
+			//Parametros
+			String params = "";
+			for(int i=1; i < service.length ; i++) {
+				params += service[i] + " ";
+			}
+			ServerClass server = new ServerClass();
+			server.setOperation(service[0]);
+			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/remote/" + service[0];
+			Naming.rebind(rname, server);
+			// Llamado
+			broker = getBroker();
+			String result = broker.registerServer(rname,service[0]);
+			System.out.println(result);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
