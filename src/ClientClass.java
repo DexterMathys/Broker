@@ -67,9 +67,14 @@ public class ClientClass {
 					}
 					broker = getBroker();
 					String rnameserver = broker.returnServer(service[0]);
-					System.out.println(rnameserver);
-					IfaceServerClass server = getServer(rnameserver);
-					System.out.println(server.operation(service[0], params));
+					if(rnameserver == null){
+						System.out.println("El servicio "+ service[0] + " no fue encontrado");	
+					}else{
+						System.out.println(rnameserver);
+						IfaceServerClass server = getServer(rnameserver);
+						System.out.println(server.operation(service[0], params));	
+					}
+					
 					
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -138,7 +138,11 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			}
 			ServerClass server = new ServerClass();
 			server.setOperation(service[0]);
-			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/remote/" + service[0];
+			String host = "localhost";
+			if(service.length > 1){
+				host = service[1];
+			}
+			String rname = "//" + host +":" + Registry.REGISTRY_PORT + "/remote/" + service[0];
 			Naming.rebind(rname, server);
 			// Llamado
 			broker = getBroker();
