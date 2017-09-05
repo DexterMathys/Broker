@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 
 public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 	
-	private HashMap<String,String> servers = new HashMap<String,String>();
+	private HashMap<String,ListOfServers> servers = new HashMap<String,ListOfServers>();
 
 	public Broker() throws RemoteException{
 		super();
@@ -19,7 +19,13 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 			/* Register the object using Naming.rebind(...) */
 			System.out.println("Me llego " + rname);
 			System.out.println(" y " + operation);
-			this.servers.put(operation, rname);
+			ListOfServers listServers = this.servers.get(operation);
+			if(listServers == null) {
+				// values.add(rname);
+				listServers = new ListOfServers();
+			}
+			listServers.addServer(rname);
+			this.servers.put(operation, listServers);
 			return rname;
 		} catch (Exception e) {
 			System.out.println("Hey, an error occurred at Naming.rebind");
@@ -30,7 +36,13 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 	}
 	
 	public String returnServer(String operation) throws RemoteException{
-		return this.servers.get(operation);
+		ListOfServers listServers = this.servers.get(operation);
+		String result = null;
+		if(listServers != null){
+			result = listServers.getServer();
+		}
+		return result;
+
 	}
 
 	public static void main(String args[]) {
