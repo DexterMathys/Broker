@@ -142,12 +142,18 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			if(service.length > 1){
 				host = service[1];
 			}
-			String rname = "//" + host +":" + Registry.REGISTRY_PORT + "/remote/" + service[0];
-			Naming.rebind(rname, server);
 			// Llamado
 			broker = getBroker();
-			String result = broker.registerServer(rname,service[0]);
-			System.out.println(result);
+			String operationIsRegisterd = broker.returnServer(service[0]);
+			if (operationIsRegisterd != null) {
+				System.out.print("El servicio ya se encuentra registrado");
+				System.exit(0);
+			}else {
+				String rname = "//" + host +":" + Registry.REGISTRY_PORT + "/remote/" + service[0];
+				Naming.rebind(rname, server);
+				String result = broker.registerServer(rname,service[0]);
+				System.out.println("Servicio registrado: " + result);
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
