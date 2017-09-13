@@ -40,11 +40,12 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	// @Override
 	public String list(String path) throws RemoteException {
 		// TODO Auto-generated method stub
-		System.out.println("Listar los archivos");
+		//System.out.println("Listar los archivos");
 		String sDirectorio = path.replaceAll("\\s+","");
 		if (sDirectorio == null || sDirectorio.isEmpty() ){
 			sDirectorio = "./";	
 		}
+		System.out.println("Listar los archivos de " + sDirectorio);
 		File f = new File(sDirectorio);
  		File[] ficheros = f.listFiles();
  		String result = "";
@@ -89,7 +90,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	    } else {
 	            dir.mkdir();
 	            dir.renameTo(newName);
-	            return "El directiorio no existia por lo tanto se creo";
+	            return "El directiorio no existia, por lo tanto se creo";
 	    }
 
 	}
@@ -126,8 +127,15 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		
 		Scanner sc = new Scanner(System.in);
 		IfaceBrokerClass broker;
-		System.out.print("Ingrese el servicio que desea registrar (list, create, rename, delete): ");
+		System.out.print("Ingrese el host del servidor (por ejemplo localhost) :");
 		String line = sc.nextLine();
+		String host = "localhost";
+		if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
+			host = line.split(" ")[0];
+		}
+		
+		System.out.print("Ingrese el servicio que desea registrar (list, create, rename, delete): ");
+		line = sc.nextLine();
 		String[] service = line.split(" ");
 		
 		try {
@@ -138,10 +146,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			}
 			ServerClass server = new ServerClass();
 			server.setOperation(service[0]);
-			String host = "localhost";
-			if(service.length > 1){
-				host = service[1];
-			}
+
 			// Llamado
 			broker = getBroker();
 			String operationIsRegisterd = broker.returnServer(service[0]);

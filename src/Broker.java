@@ -28,6 +28,7 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 			
 			//this.servers.put(operation, listServers);
 			this.servers.put(operation, rname);	
+			System.out.println("Se registro " + rname);
 			return rname;
 		} catch (Exception e) {
 			System.out.println("Hey, an error occurred at Naming.rebind");
@@ -49,8 +50,10 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 
 	public static void main(String args[]) {
 		try {
+			System.out.println("Iniciando Broker");
 			String rnamebroker = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
 			Naming.rebind(rnamebroker, new Broker());
+			System.out.println("Se registro el broker " + rnamebroker);
 			//ServerClass robject = new ServerClass();
 			//String rname = "//localhost:" + Registry.REGISTRY_PORT + "/remote";
 			//Naming.rebind(rname, robject);

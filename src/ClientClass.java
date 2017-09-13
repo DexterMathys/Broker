@@ -70,7 +70,7 @@ public class ClientClass {
 					if(rnameserver == null){
 						System.out.println("El servicio "+ service[0] + " no fue encontrado");	
 					}else{
-						System.out.println(rnameserver);
+						//System.out.println(rnameserver);
 						IfaceServerClass server = getServer(rnameserver);
 						System.out.println(server.operation(service[0], params));	
 					}
