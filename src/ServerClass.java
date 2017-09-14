@@ -72,6 +72,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		// 	return "No se pudo crear el archivo";
 		// 	//e.printStackTrace();
 		// }
+		System.out.println("Se creo el directorio " + path);
 		return "Se creo el directorio";
 	}
 
@@ -86,10 +87,12 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	    File newName = new File(paths[1]);
 	    if ( dir.isDirectory() ) {
 	            dir.renameTo(newName);
+	            System.out.println("Se renombro el directorio");
 	            return "Se renombro el directorio";
 	    } else {
 	            dir.mkdir();
 	            dir.renameTo(newName);
+	            System.out.println("El directorio no existia, por lo tanto se creo");
 	            return "El directiorio no existia, por lo tanto se creo";
 	    }
 
@@ -104,16 +107,26 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		}
 		System.out.println("Eliminar " + path);
 		if (new File(path.replaceAll("\\s+","")).delete()) {
+			System.out.println("Se elimino " + path);
 			return "Se elimino " + path;
 		} else {
+			System.out.println("Error al intentar eliminar " + path);
 			return "Error al intentar eliminar " + path;
 		}
 	}
 	
 	private static IfaceBrokerClass getBroker()
 	{
-		try{ 
-			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
+		try{
+			Scanner sc = new Scanner(System.in);
+			IfaceBrokerClass broker;
+			System.out.print("Ingrese el host del broker (por ejemplo localhost) :");
+			String line = sc.nextLine();
+			String host = "localhost";
+			if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
+				host = line.split(" ")[0];
+			}
+			String rname = "//"+host+":" + Registry.REGISTRY_PORT + "/broker";
 			return (IfaceBrokerClass) Naming.lookup(rname);
 		}catch (Exception e) {
 			e.printStackTrace();

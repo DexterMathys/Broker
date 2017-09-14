@@ -23,8 +23,16 @@ public class ClientClass {
 	
 	private static IfaceBrokerClass getBroker()
 	{
-		try{ 
-			String rname = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
+		try{
+			Scanner sc = new Scanner(System.in);
+			IfaceBrokerClass broker;
+			System.out.print("Ingrese el host del broker (por ejemplo localhost) :");
+			String line = sc.nextLine();
+			String host = "localhost";
+			if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
+				host = line.split(" ")[0];
+			}
+			String rname = "//"+host+":" + Registry.REGISTRY_PORT + "/broker";
 			return (IfaceBrokerClass) Naming.lookup(rname);
 		}catch (Exception e) {
 			e.printStackTrace();

@@ -1,7 +1,7 @@
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
-
+import java.util.Scanner;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 
@@ -50,8 +50,15 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 
 	public static void main(String args[]) {
 		try {
-			System.out.println("Iniciando Broker");
-			String rnamebroker = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
+			Scanner sc = new Scanner(System.in);
+			IfaceBrokerClass broker;
+			System.out.print("Ingrese el host del broker (por ejemplo localhost) :");
+			String line = sc.nextLine();
+			String host = "localhost";
+			if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
+				host = line.split(" ")[0];
+			}
+			String rnamebroker = "//"+host+":" + Registry.REGISTRY_PORT + "/broker";
 			Naming.rebind(rnamebroker, new Broker());
 			System.out.println("Se registro el broker " + rnamebroker);
 			//ServerClass robject = new ServerClass();
