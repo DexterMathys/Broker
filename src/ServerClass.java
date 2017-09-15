@@ -20,39 +20,38 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 
 	public ServerClass() throws RemoteException {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public String operation(String servicio, String params) throws RemoteException {
-		// TODO Auto-generated method stub
-		// return null;
 		switch (servicio) {
-    	case "list": return list(params);
-      case "create": return create(params);
-      case "rename": return rename(params);
-      case "delete": return delete(params);
-      default: return "Servicio invalido ";
-    }
-
+	    	case "list": return list(params);
+	    	case "create": return create(params);
+	    	case "rename": return rename(params);
+	    	case "delete": return delete(params);
+	    	default: return "Servicio invalido ";
+	    }
 	}
 
 	// @Override
 	public String list(String path) throws RemoteException {
-		// TODO Auto-generated method stub
-		//System.out.println("Listar los archivos");
-		String sDirectorio = path.replaceAll("\\s+","");
-		if (sDirectorio == null || sDirectorio.isEmpty() ){
-			sDirectorio = "./";	
+		try {
+			String sDirectorio = path.replaceAll("\\s+","");
+			if (sDirectorio == null || sDirectorio.isEmpty() ){
+				sDirectorio = "./";	
+			}
+			System.out.println("Listar los archivos de " + sDirectorio);
+			File f = new File(sDirectorio);
+	 		File[] ficheros = f.listFiles();
+	 		String result = "";
+	 		for (int x=0;x<ficheros.length;x++){
+	    	  result += ficheros[x].getName() + "\n";
+		    }
+		    return result;
+		} catch (Exception e) {
+			System.out.println("Error al listar los archivos.");
+			return "Error al listar los archivos";
 		}
-		System.out.println("Listar los archivos de " + sDirectorio);
-		File f = new File(sDirectorio);
- 		File[] ficheros = f.listFiles();
- 		String result = "";
- 		for (int x=0;x<ficheros.length;x++){
-    	  result += ficheros[x].getName() + "\n";
-	    }
-	    return result;
 	}
 
 	// @Override
@@ -61,19 +60,19 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			System.out.println("El cliente envio un parametro vacio");
 			return "Error, falta el parametro a crear";
 		}
-		// Use relative path for Unix systems
-		File f = new File(path.replaceAll("\\s+",""));
-
-		f.mkdirs(); 
-		// try {
-		// 	//f.createNewFile();
-		// } catch (IOException e) {
-		// 	System.out.println("No se pudo crear el archivo");
-		// 	return "No se pudo crear el archivo";
-		// 	//e.printStackTrace();
-		// }
-		System.out.println("Se creo el directorio " + path);
-		return "Se creo el directorio";
+		try {
+			// Use relative path for Unix systems
+			File f = new File(path.replaceAll("\\s+",""));
+			if (f.mkdirs()) {
+				System.out.println("Se creo el directorio " + path);
+				return "Se creo el directorio";
+			}
+			System.out.println("Error al crear el directorio.");
+			return "Error al crear el directorio";
+		} catch (Exception e) {
+			System.out.println("Error al crear el directorio.");
+			return "Error al crear el directorio";
+		}
 	}
 
 	// @Override
@@ -86,14 +85,25 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		File dir = new File(paths[0]);
 	    File newName = new File(paths[1]);
 	    if ( dir.isDirectory() ) {
-	            dir.renameTo(newName);
-	            System.out.println("Se renombro el directorio");
-	            return "Se renombro el directorio";
+	            try {
+	            	dir.renameTo(newName);
+		            System.out.println("Se renombro el directorio");
+		            return "Se renombro el directorio";
+				} catch (Exception e) {
+					System.out.println("Error al renombrar el directorio.");
+					return "Error al renombrar el directorio";
+				}
 	    } else {
-	            dir.mkdir();
+	    	try {
+	    		dir.mkdir();
 	            dir.renameTo(newName);
 	            System.out.println("El directorio no existia, por lo tanto se creo");
 	            return "El directiorio no existia, por lo tanto se creo";
+			} catch (Exception e) {
+				System.out.println("El directorio no existia, se intento crear pero fallo.");
+				return "El directorio no existia, se intento crear pero fallo.";
+			}
+	            
 	    }
 
 	}
@@ -106,10 +116,15 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			return "Error, falta el parametro a eliminar";
 		}
 		System.out.println("Eliminar " + path);
-		if (new File(path.replaceAll("\\s+","")).delete()) {
-			System.out.println("Se elimino " + path);
-			return "Se elimino " + path;
-		} else {
+		try {
+			if (new File(path.replaceAll("\\s+","")).delete()) {
+				System.out.println("Se elimino " + path);
+				return "Se elimino " + path;
+			} else {
+				System.out.println("Error al intentar eliminar " + path);
+				return "Error al intentar eliminar " + path;
+			}
+		} catch (Exception e) {
 			System.out.println("Error al intentar eliminar " + path);
 			return "Error al intentar eliminar " + path;
 		}
@@ -117,64 +132,85 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	
 	private static IfaceBrokerClass getBroker()
 	{
-		try{
-			Scanner sc = new Scanner(System.in);
-			IfaceBrokerClass broker;
-			System.out.print("Ingrese el host del broker (por ejemplo localhost) :");
-			String line = sc.nextLine();
-			String host = "localhost";
-			if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
-				host = line.split(" ")[0];
+		boolean seguir = true;
+		while(seguir){
+			try{
+				Scanner sc = new Scanner(System.in);
+				IfaceBrokerClass broker;
+				System.out.print("Ingrese el host del broker (por defecto es localhost) :");
+				String line = sc.nextLine();
+				String host = "localhost";
+				if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
+					host = line.split(" ")[0];
+				}
+				String rname = "//"+host+":" + Registry.REGISTRY_PORT + "/broker";
+				return (IfaceBrokerClass) Naming.lookup(rname);
+			}catch (Exception e) {
+				System.out.println("Error al intentar conectar con el Broker.");
 			}
-			String rname = "//"+host+":" + Registry.REGISTRY_PORT + "/broker";
-			return (IfaceBrokerClass) Naming.lookup(rname);
-		}catch (Exception e) {
-			e.printStackTrace();
 		}
 		return null;
 	}
 	
 	public static void main(String[] args)
-	{
-		// FileInputStream fstream = null;
-		
+	{		
 		Scanner sc = new Scanner(System.in);
 		IfaceBrokerClass broker;
-		System.out.print("Ingrese el host del servidor (por ejemplo localhost) :");
+		System.out.print("Ingrese el host del servidor (por defecto es localhost) :");
 		String line = sc.nextLine();
 		String host = "localhost";
 		if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
 			host = line.split(" ")[0];
 		}
-		
-		System.out.print("Ingrese el servicio que desea registrar (list, create, rename, delete): ");
-		line = sc.nextLine();
-		String[] service = line.split(" ");
-		
-		try {
-			//Parametros
-			String params = "";
-			for(int i=1; i < service.length ; i++) {
-				params += service[i] + " ";
-			}
-			ServerClass server = new ServerClass();
-			server.setOperation(service[0]);
 
-			// Llamado
-			broker = getBroker();
-			String operationIsRegisterd = broker.returnServer(service[0]);
-			if (operationIsRegisterd != null) {
-				System.out.print("El servicio ya se encuentra registrado");
-				System.exit(0);
-			}else {
-				String rname = "//" + host +":" + Registry.REGISTRY_PORT + "/remote/" + service[0];
-				Naming.rebind(rname, server);
-				String result = broker.registerServer(rname,service[0]);
-				System.out.println("Servicio registrado: " + result);
+		boolean seguir = true;
+		while(seguir){
+			try {
+				System.out.print("Ingrese el servicio que desea registrar (list, create, rename, delete) o no ingrese nada para salir: ");
+				line = sc.nextLine();
+				String[] service = line.split(" ");
+				//Parametros
+				String params = "";
+				for(int i=1; i < service.length ; i++) {
+					params += service[i] + " ";
+				}
+				if (service[0].isEmpty() || service[0].equals("")) {
+					seguir = false;
+				} else if (!service[0].equals("list") && !service[0].equals("create") && !service[0].equals("rename") && !service[0].equals("delete")) {
+					System.out.println("Servicio incorrecto.");
+				}else {
+					ServerClass server = new ServerClass();
+					server.setOperation(service[0]);
+		
+					// Llamado
+					broker = getBroker();
+					String operationIsRegisterd = broker.returnServer(service[0]);
+					if (operationIsRegisterd != null) {
+						System.out.print("El servicio ya se encuentra registrado");
+						System.exit(0);
+					}else {
+						String rname = "//" + host +":" + Registry.REGISTRY_PORT + "/remote/" + service[0];
+						Naming.rebind(rname, server);
+						String result = broker.registerServer(rname,service[0]);
+						if (result != null) {
+							System.out.println("Servicio registrado: " + result);
+							seguir = false;
+						}else{
+							System.out.println("No se pudo registrar el servicio en el Broker.");
+						}						
+						
+					}
+				}
+					
+			} catch (Exception e) {
+				System.out.println("Error al intentar registrar al servidor.");
+				System.out.print("Ingrese el host del servidor (por defecto es localhost) :");
+				line = sc.nextLine();
+				host = "localhost";
+				if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
+					host = line.split(" ")[0];
+				}
 			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	

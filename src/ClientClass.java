@@ -8,7 +8,6 @@ public class ClientClass {
 	public static String server = null;
 
 	public ClientClass() {
-		// TODO Auto-generated constructor stub
 	}
 
 	private static IfaceServerClass getServer(String server)
@@ -16,7 +15,7 @@ public class ClientClass {
 		try{ 
 			return (IfaceServerClass) Naming.lookup(server);
 		}catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Error al obtener el servidor.");
 		}
 		return null;
 	}
@@ -26,7 +25,7 @@ public class ClientClass {
 		try{
 			Scanner sc = new Scanner(System.in);
 			IfaceBrokerClass broker;
-			System.out.print("Ingrese el host del broker (por ejemplo localhost) :");
+			System.out.print("Ingrese el host del broker (por defecto es localhost) :");
 			String line = sc.nextLine();
 			String host = "localhost";
 			if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
@@ -35,24 +34,10 @@ public class ClientClass {
 			String rname = "//"+host+":" + Registry.REGISTRY_PORT + "/broker";
 			return (IfaceBrokerClass) Naming.lookup(rname);
 		}catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Error al conectar con el Broker.");
 		}
 		return null;
 	}
-
-	// public static String requestServer(String operation, IfaceServerClass broker) {
-	// 	return broker.returnServer(operation);
-	// }
-	
-	// public static void executeOperation(int a, int b){
-	// 	try {
-	// 		IfaceServerClass remote = (IfaceServerClass) Naming.lookup(this.server);
-	// 		remote.operation(a, b);
-	// 		System.out.println("Done");
-	// 	} catch (Exception e) {
-	// 		e.printStackTrace();
-	// 	}
-	// }
 
 	public static void main(String[] args)
 	{
@@ -61,31 +46,37 @@ public class ClientClass {
 		IfaceBrokerClass broker;
 		Boolean seguir = true;
 		while (seguir){
-			System.out.print("Ingrese el servicio que desea utilizar(list, create, rename, delete): ");
+			System.out.print("Ingrese el servicio que desea utilizar(list, create, rename, delete) o no ingrese nada para salir: ");
 			String line = sc.nextLine();
 			String[] service = line.split(" ");
-			if (service.length == 0 || service[0].equals("exit")) {
+			if (service.length == 0 || service[0].equals("")) {
 				seguir = false;
 			}else {
-				try {
-					//Parametros
-					String params = "";
-					for(int i=1; i < service.length ; i++) {
-						params += service[i] + " ";
+				
+				//Parametros
+				String params = "";
+				for(int i=1; i < service.length ; i++) {
+					params += service[i] + " ";
+				}
+				broker = getBroker();
+				if (broker != null) {
+					try {
+						String rnameserver = broker.returnServer(service[0]);
+						if(rnameserver == null){
+							System.out.println("El servicio "+ service[0] + " no fue encontrado.");	
+						}else{
+							IfaceServerClass server = getServer(rnameserver);
+							if (server != null) {
+								try {
+									System.out.println(server.operation(service[0], params));
+								} catch (Exception e) {
+									System.out.println("Error de ejecucion del servicio.");
+								}
+							}
+						}
+					} catch (Exception e) {
+						System.out.println("Error al solicitar el servidor al Broker.");
 					}
-					broker = getBroker();
-					String rnameserver = broker.returnServer(service[0]);
-					if(rnameserver == null){
-						System.out.println("El servicio "+ service[0] + " no fue encontrado");	
-					}else{
-						//System.out.println(rnameserver);
-						IfaceServerClass server = getServer(rnameserver);
-						System.out.println(server.operation(service[0], params));	
-					}
-					
-					
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}

@@ -14,60 +14,45 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 	}
 
 	public String registerServer(String rname, String operation) throws RemoteException {
-		// TODO Auto-generated method stub
-		try{
-			/* Register the object using Naming.rebind(...) */
-			// System.out.println("Me llego " + rname);
-			// System.out.println(" y " + operation);
-			// //ListOfServers listServers = this.servers.get(operation);
-			// if(listServers == null) {
-			// 	// values.add(rname);
-			// 	listServers = new ListOfServers();
-			// }
-			// listServers.addServer(rname);
-			
-			//this.servers.put(operation, listServers);
+		try {
 			this.servers.put(operation, rname);	
 			System.out.println("Se registro " + rname);
 			return rname;
 		} catch (Exception e) {
-			System.out.println("Hey, an error occurred at Naming.rebind");
-			e.printStackTrace();
-			System.out.println(e.getMessage());
+			System.out.println("Error al registrar el servidor.");
 			return null;
-		}
+		}	
+			
 	}
 	
 	public String returnServer(String operation) throws RemoteException{
-		// ListOfServers listServers = this.servers.get(operation);
-		// String result = null;
-		// if(listServers != null){
-			// result = listServers.getServer();
-		// }
-		return this.servers.get(operation);
-
+		try {
+			return this.servers.get(operation);
+		} catch (Exception e) {
+			System.out.println("Error al retornar el servidor.");
+			return null;
+		}
 	}
 
 	public static void main(String args[]) {
-		try {
-			Scanner sc = new Scanner(System.in);
-			IfaceBrokerClass broker;
-			System.out.print("Ingrese el host del broker (por ejemplo localhost) :");
-			String line = sc.nextLine();
-			String host = "localhost";
-			if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
-				host = line.split(" ")[0];
+		boolean seguir = true;
+		while(seguir){
+			try {
+				Scanner sc = new Scanner(System.in);
+				IfaceBrokerClass broker;
+				System.out.print("Ingrese el host del broker (por defecto es localhost) :");
+				String line = sc.nextLine();
+				String host = "localhost";
+				if (line.split(" ") != null && line.split(" ").length > 0 && line.split(" ")[0] != "" && !(line.split(" ")[0].isEmpty())) {
+					host = line.split(" ")[0];
+				}
+				String rnamebroker = "//"+host+":" + Registry.REGISTRY_PORT + "/broker";
+				Naming.rebind(rnamebroker, new Broker());
+				System.out.println("Se registro el broker " + rnamebroker);
+				seguir = false;
+			} catch (Exception e) {
+				System.out.println("Error al intentar registrar el Broker.");
 			}
-			String rnamebroker = "//"+host+":" + Registry.REGISTRY_PORT + "/broker";
-			Naming.rebind(rnamebroker, new Broker());
-			System.out.println("Se registro el broker " + rnamebroker);
-			//ServerClass robject = new ServerClass();
-			//String rname = "//localhost:" + Registry.REGISTRY_PORT + "/remote";
-			//Naming.rebind(rname, robject);
-		} catch (Exception e) {
-			System.out.println("Hey, an error occurred at Naming.rebind");
-			e.printStackTrace();
-			System.out.println(e.getMessage());
 		}
 	}
 	
