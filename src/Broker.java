@@ -5,14 +5,22 @@ import java.util.Scanner;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 
+/*
+ * Clase que implementa la interfaz IfaceBrokerClass.java
+ * Esta clase implementa los 2 metodos definidos en la interfaz.
+ * Extiende de UnicasRemoteObject para poder ser referenciado de forma remota
+ */
+
 public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 	
+	//Variable que tendra un listado de Servidores y servicios
 	private HashMap<String,String> servers = new HashMap<String,String>();
 
 	public Broker() throws RemoteException{
 		super();
 	}
 
+	// Metodo remoto para registrar un servidor y un servicio
 	public String registerServer(String rname, String operation) throws RemoteException {
 		try {
 			this.servers.put(operation, rname);	
@@ -25,6 +33,7 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 			
 	}
 	
+	// Metodo remoto para devolver una referencia a un servidor
 	public String returnServer(String operation) throws RemoteException{
 		try {
 			return this.servers.get(operation);
@@ -34,12 +43,12 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 		}
 	}
 
+	//Metodo main que solicita el host del Broker y lo registra
 	public static void main(String args[]) {
 		boolean seguir = true;
 		while(seguir){
 			try {
 				Scanner sc = new Scanner(System.in);
-				IfaceBrokerClass broker;
 				System.out.print("Ingrese el host del broker (por defecto es localhost) :");
 				String line = sc.nextLine();
 				String host = "localhost";
@@ -55,19 +64,5 @@ public class Broker extends UnicastRemoteObject implements IfaceBrokerClass {
 			}
 		}
 	}
-	
-	/*
-	 * El main del broker deberia de registrarse a si mismo 
-	  	String rname = "//localhost:" + Registry.REGISTRY_PORT + "/broker";
-		Naming.rebind(rname, this);
-	 * Y tener su interfaz para que los clientes y los servidores le puedan hacer llamados remotas
-	 * 
-	 * El broker debe definir un método para guardar los "rname" de los servidores junto a los 
-	 * servicios que brindan.
-	 * 
-	 * Y también tiene que definir un método para buscar en su lista de servidores y devolver el
-	 * "rname" que sea solicitado por el cliente
-	 * 
-	 * */
 
 }

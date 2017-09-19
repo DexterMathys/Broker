@@ -5,11 +5,19 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.io.*;
 
+/*
+ * Clase que implementa la interfaz IfaceServerClass.java
+ * Extiende de UnicastRemoteObject para poder ser ejecutada de forma remota
+ * Clase Servidor que ejecuta los servicios de manejo de directorios
+ */
 public class ServerClass extends UnicastRemoteObject implements IfaceServerClass {
 	
 	private static final long serialVersionUID = 1758625231493571910L;
+	
+	//Variable que conserva el servicio que ejecuta el Servidor
 	private String operation = "NOTHING";
 	
+	//Accessors de la variable operation
 	public String getOperation() {
 		return operation;
 	}
@@ -22,6 +30,8 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		super();
 	}
 
+	//Implementacion del metodo remoto definido en la interfaz
+	//Dependiendo del servicio llegado por parametro ejecuta uno u otro metodo.
 	@Override
 	public String operation(String servicio, String params) throws RemoteException {
 		switch (servicio) {
@@ -33,7 +43,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 	    }
 	}
 
-	// @Override
+	//Metodo para listar el contenido del directorio pasado por parametro
 	public String list(String path) throws RemoteException {
 		try {
 			String sDirectorio = path.replaceAll("\\s+","");
@@ -54,7 +64,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		}
 	}
 
-	// @Override
+	//Metodo para crear un directorio nuevo
 	public String create(String path) throws RemoteException {
 		if (path == null || path.isEmpty() ){
 			System.out.println("El cliente envio un parametro vacio");
@@ -75,7 +85,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		}
 	}
 
-	// @Override
+	//Metodo para renombrar el directorio pasado por parametro. Si no exite lo crea
 	public String rename(String params) throws RemoteException {
 		if (params == null || params.isEmpty() || params.split(" ").length != 2 ){
 			System.out.println("El cliente envio un parametro vacio");
@@ -108,7 +118,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 
 	}
 	
-	// @Override
+	//Metodo para eliminar el directorio pasado por parametro
 	public String delete(String path) throws RemoteException {
 		// TODO Auto-generated method stub
 		if (path == null || path.isEmpty() ){
@@ -130,6 +140,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		}
 	}
 	
+	//Metodo para obtener la referencia al Broker remoto
 	private static IfaceBrokerClass getBroker()
 	{
 		boolean seguir = true;
@@ -152,6 +163,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 		return null;
 	}
 	
+	//Metodo main para registrar al Servidor en el Broker
 	public static void main(String[] args)
 	{		
 		Scanner sc = new Scanner(System.in);
@@ -182,7 +194,7 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 					ServerClass server = new ServerClass();
 					server.setOperation(service[0]);
 		
-					// Llamado
+					//Obtiene la referencia al Broker remoto
 					broker = getBroker();
 					String operationIsRegisterd = broker.returnServer(service[0]);
 					if (operationIsRegisterd != null) {
@@ -213,10 +225,5 @@ public class ServerClass extends UnicastRemoteObject implements IfaceServerClass
 			}
 		}
 	}
-	
-	/**
-	 * El main del servidor tiene que conocer el "rname" del broker para que pueda decirle a este 
-	 * que servicio ofrece de forma remota.
-	 */
 
 }

@@ -3,6 +3,9 @@ import java.rmi.registry.Registry;
 import java.util.Scanner;
 import java.util.Arrays;
 
+/*
+ * Clase que ejecuta el lado del cliente del proyecto
+ */
 public class ClientClass {
 	
 	public static String server = null;
@@ -10,6 +13,7 @@ public class ClientClass {
 	public ClientClass() {
 	}
 
+	//Metodo que recibe una referencia remota y obtiene un objeto de la clase de la interfaz del Servidor
 	private static IfaceServerClass getServer(String server)
 	{
 		try{ 
@@ -20,11 +24,11 @@ public class ClientClass {
 		return null;
 	}
 	
+	//Metodo para obtener un objeto referencia al Broker remoto
 	private static IfaceBrokerClass getBroker()
 	{
 		try{
 			Scanner sc = new Scanner(System.in);
-			IfaceBrokerClass broker;
 			System.out.print("Ingrese el host del broker (por defecto es localhost) :");
 			String line = sc.nextLine();
 			String host = "localhost";
@@ -39,6 +43,7 @@ public class ClientClass {
 		return null;
 	}
 
+	//Metodo main para consultar por un servidor remoto y mandarlo a ejecutar un servicio de manejo de directorio
 	public static void main(String[] args)
 	{
 		
@@ -81,14 +86,5 @@ public class ClientClass {
 			}
 		}
 	}
-	
-	/*
-	 * El main del cliente cambia un poco, hasta ahora estaba accediendo directamente al "rname" del
-	 * servidor, no se lo estaba preguntando al broker.
-	 * Entonces ahora lo que debe hacer es saber el "rname" del broker y preguntarle de forma remota a
-	 * través de su interfaz y pedirle al broker el "rname" del servidor, y ahi si entonces ejecutar
-	 * al servidor.
-	 * 
-	 * */
 
 }
